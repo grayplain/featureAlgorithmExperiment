@@ -1,7 +1,11 @@
 import cv2 as cv
+import random
+
 
 from cv2 import xfeatures2d as Feature
 
+
+# tirasiSIFT("cut_tirasi_1.png")
 def tirasiSIFT(imageName,directory="Images"):
     surf = Feature.SURF_create(400)
 
@@ -25,16 +29,29 @@ def tirasiSIFT(imageName,directory="Images"):
     cv.waitKey(0)
     cv.destroyAllWindows()
 
-def tirasiAKAZE(imageName,directory="Images"):
+#tirasiAKAZE("n3big.png",directory="Images/hachi_hachi")
+def tirasiAKAZE(imageName,directory="Images", isWriteFile=False):
+
+    #画像準備
     image = cv.imread(directory + "/" + imageName)
+    image = cv.resize(image,(500,500))
+
+    #特徴量抽出処理
     akaze = cv.AKAZE_create()
     kp = akaze.detect(image, None)
     kp, des = akaze.compute(image, kp)
 
+    #抽出した特徴量を画像に当て込む
     imgAkaze = cv.drawKeypoints(image,kp,None)
-    cv.imshow('image', imgAkaze)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+
+    if isWriteFile:
+        randomNumber = random.randint(1,10000000)
+        cv.imwrite(directory + '/' + imageName + "-" + str(randomNumber) + ".png", imgAkaze)
+    else:
+        cv.imshow('image', imgAkaze)
+        cv.waitKey(0)
+        cv.destroyAllWindows()
+
 
 def compareSURF(imgPrefName, directory="Images", imgFormatName=".png", allImageNumber=range(1,3)):
     surf = Feature.SURF_create()
@@ -58,7 +75,7 @@ def compareSURF(imgPrefName, directory="Images", imgFormatName=".png", allImageN
 
         cv.imwrite('result_surf_images/result_image' + str(index) + ".png", image)
 
-
+#compareSIFT(imgPrefName="n", allImageNumber=range(1, 30), directory="Images/mass_number")
 def compareSIFT(imgPrefName, directory="Images", imgFormatName=".png", allImageNumber=range(1,3)):
     sift = Feature.SIFT_create()
 
@@ -81,6 +98,7 @@ def compareSIFT(imgPrefName, directory="Images", imgFormatName=".png", allImageN
 
         cv.imwrite('result_sift_images/result_image' + str(index) + ".png", image)
 
+#compareAKAZE(imgPrefName="n", allImageNumber=range(1, 30), directory="Images/mass_number")
 def compareAKAZE(imgPrefName, directory="Images", imgFormatName=".png", allImageNumber=range(1,3)):
     akaze = cv.AKAZE_create()
 
@@ -103,13 +121,9 @@ def compareAKAZE(imgPrefName, directory="Images", imgFormatName=".png", allImage
 
         cv.imwrite('result_akaze_images/result_image' + str(index) + ".png", image)
 
-if __name__ == "__main__":
-    #compareSIFT(imgPrefName="download-",allImageNumber=range(1,3))
-    #compareSIFT(imgPrefName="n", allImageNumber=range(1, 30), directory="Images/mass_number")
 
-    #compareAKAZE(imgPrefName="n", allImageNumber=range(1, 30), directory="Images/mass_number")
-    tirasiAKAZE("n3big.png",directory="Images/hachi_hachi")
-    #tirasiSIFT("cut_tirasi_1.png")
-    #tirasiSIFT("cut_tirasi_2.png")
-    #tirasiSIFT("cut_tirasi_3.png")
+if __name__ == "__main__":
+    images =  ["n1","n2","n3"]
+    for image in images:
+        tirasiAKAZE(image + ".png",directory="Images/hachi_hachi",isWriteFile=True)
     pass
