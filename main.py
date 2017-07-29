@@ -1,6 +1,6 @@
 import cv2 as cv
 import random
-
+import csv
 
 from cv2 import xfeatures2d as Feature
 
@@ -29,6 +29,35 @@ def tirasiSIFT(imageName,directory="Images"):
     cv.waitKey(0)
     cv.destroyAllWindows()
 
+
+def saveKeyPointsToFile(fileName,keyPoints,directory="Images"):
+    file = open(directory + "/" + fileName + "-keyPoints.csv",'a')
+    csvWriter = csv.writer(file)
+
+    listData = []
+    listData.append("angle")
+    listData.append("class_id")
+    listData.append("octave")
+    listData.append("x")
+    listData.append("y")
+    listData.append("response")
+    listData.append("size")
+    csvWriter.writerow(listData)
+
+    for keyPoint in keyPoints:
+        listData = []
+        listData.append(keyPoint.angle)
+        listData.append(keyPoint.class_id)
+        listData.append(keyPoint.octave)
+        listData.append(keyPoint.pt[0])
+        listData.append(keyPoint.pt[1])
+        listData.append(keyPoint.response)
+        listData.append(keyPoint.size)
+
+        csvWriter.writerow(listData)
+    file.close()
+
+
 #tirasiAKAZE("n3big.png",directory="Images/hachi_hachi")
 def tirasiAKAZE(imageName,directory="Images", isWriteFile=False):
 
@@ -47,6 +76,7 @@ def tirasiAKAZE(imageName,directory="Images", isWriteFile=False):
     if isWriteFile:
         randomNumber = random.randint(1,10000000)
         cv.imwrite(directory + '/' + imageName + "-" + str(randomNumber) + ".png", imgAkaze)
+        saveKeyPointsToFile(imageName + "-" + str(randomNumber),keyPoints=kp,directory=directory)
     else:
         cv.imshow('image', imgAkaze)
         cv.waitKey(0)
